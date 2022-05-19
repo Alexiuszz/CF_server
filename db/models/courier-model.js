@@ -30,7 +30,11 @@ const courierSchema = new Schema({
     },
     details: {
         type: String
-    }
+    },
+    createdProfile: {
+        type: Boolean
+    },
+
 }, { timestamps: true });
 
 const Courier = mongoose.model('courier', courierSchema);
