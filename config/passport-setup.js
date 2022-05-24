@@ -1,36 +1,21 @@
 const passport = require("passport");
-const Strategy = require("passport-local").Strategy;
+const LocalStrategy = require("passport-local");
 const Merchant = require("../db/models/merchant-model");
 const Courier = require("../db/models/courier-model");
 const bcrypt = require("bcrypt");
+var express = require("express");
 
-passport.serializeUser(function (user, done) {
-  console.log("at serial " + user._id);
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-  Courier.findById(id).then((user) => {
-    if (user) {
-      console.log("at deserial " + id);
-      done(null, user);
-    }
-  });
-  Merchant.findById(id).then((user) => {
-    if (!user) {
-      done(null, false);
-    }
-    done(null, user);
-  });
-});
-
-// passport.deserializeUser(function (id, cb) {
-//   console.log("at deserial " + id);
-//   return cb(null, id);
+// passport.deserializeUser(function (user, cb) {
+//   console.log("at deserial " + user);
+//   return cb(null, user);
 // });
 
 passport.use(
-  new Strategy({ usernameField: "email" }, (email, password, done) => {
+  new LocalStrategy({ usernameField: "email" }, function verify(
+    email,
+    password,
+    done
+  ) {
     Courier.findOne({ email: email })
       .then((currentUser) => {
         if (currentUser) {
@@ -63,3 +48,43 @@ passport.use(
       .catch((err) => console.log(err));
   })
 );
+
+// passport.serializeUser(function (user, done) {
+//   console.log("at serial " + user._id);
+//   done(null, user._id);
+// });
+
+passport.serializeUser(function (user, cb) {
+  console.log("at serial " + user.id);
+  cb(null, { id: user.id, username: user.email });
+});
+
+// passport.deserializeUser(function (user, done) {
+//   console.log("at seral " + user.id);
+//   Courier.findById(user.id).then((user) => {
+//     if (user) {
+//       done(null, user);
+//     }
+//   });
+//   Merchant.findById(user.id).then((user) => {
+//     if (!user) {
+//       done(null, false);
+//     }
+//     done(null, user);
+//   });
+// });
+
+passport.deserializeUser((req, user, done) => {
+  console.log("at serial " + user.id);
+  Courier.findById(user.id).then((user) => {
+    if (user) {
+      done(null, user);
+    }
+  });
+  Merchant.findById(user.id).then((user) => {
+    if (!user) {
+      done(null, false);
+    }
+    done(null, user);
+  });
+});

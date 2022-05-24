@@ -84,22 +84,23 @@ router.post("/new-merchant", (req, res) => {
 
 router.post(
   "/login",
-  passport.authenticate("local", { failureRedirect: "/" }),
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureMessage: true,
+  }),
   function (req, res) {
-    // console.log(req.user);
+    console.log(req.user)
+    req.session.user = req.user;
     res.send({ ...req.user, token: req.user._id + "@" + req.user.email });
   }
 );
 
 router.get("/signout", function (req, res) {
-  req.session.destroy(function (err) {
-    req.logout(function (err) {
-      if (err) {
-        res.send(false);
-      }
-      console.log("out");
-      res.send(true);
-    });
+  req.logout(function (err) {
+    if (err) res.send(false);
+    console.log("signed out");
+    req.session.destroy();
+    res.send(true);
   });
 });
 

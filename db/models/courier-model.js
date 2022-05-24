@@ -27,12 +27,7 @@ const courierSchema = new Schema(
       type: Object,
     },
     logo: {
-      picture: {
-        type: Buffer,
-      },
-      src: {
-        type: String,
-      },
+      type: String,
     },
     description: {
       type: String,

@@ -1,15 +1,19 @@
 const express = require("express");
+var sessionstore = require("sessionstore");
 const bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
+var session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
-var ensureLogin = require("connect-ensure-login").ensureLoggedIn;
-var ensureLoggedIn = ensureLogin();
+var logger = require("morgan");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const passportSetup = require("./config/passport-setup");
+
 const authRoute = require("./route-controllers/auth-routes");
-const app = express();
 const courierRoute = require("./route-controllers/courierRoutes");
+
+const app = express();
 
 app.set("port", process.env.PORT || 3003);
 
@@ -17,39 +21,48 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("../Codes/CourierFinder/App/build"));
 }
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
+app.use(logger("dev"));
 app.use(
   cors({
     origin: "http://localhost:3002", // <-- location of the react app were connecting to
     credentials: true,
   })
 );
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser("keyboard cat"));
 
 app.use(
-  require("express-session")({
+  session({
     secret: "keyboard cat",
+    store: sessionstore.createSessionStore(),
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
     // maxAge: 3600000
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+app.use(passport.authenticate("session"));
 
-app.use("/courier", courierRoute);
+function ensureLoggedIn(req, res, next) {
+  if (!req.session.user) {
+    res.sendStatus(401);
+  } else next();
+}
+
+app.use("/courier", ensureLoggedIn, courierRoute);
 app.use("/auth", authRoute);
 
-// app.get('/login', (req, res) => {
-//      res.redirect('http://localhost:3002/auth/signin');
-//  });
-
-app.get("/getCourier", ensureLoggedIn, function (req, res) {
-  console.log(req.user);
-  res.send(req.user);
+app.get("/login", (req, res) => {
+  res.redirect("http://localhost:3002/auth/signin");
 });
+
+// app.get("/getCourier", function (req, res) {
+//   console.log(req.session.user);
+//   res.send(req.session.user);
+// });
 
 //Mongo DB connect
 //mongoose connection
