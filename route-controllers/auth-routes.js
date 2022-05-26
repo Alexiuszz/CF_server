@@ -1,20 +1,10 @@
 const router = require("express").Router();
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-const connectEnsureLogin = require("connect-ensure-login");
 const Merchant = require("../db/models/merchant-model");
 const Courier = require("../db/models/courier-model");
 const Location = require("../db/models/courier-locations");
 const cors = require("cors");
-
-router.get(
-  "/getUser",
-  require("connect-ensure-login").ensureLoggedIn(),
-  function (req, res) {
-    console.log(req.user);
-    res.send(req.user);
-  }
-);
 
 router.post("/new-courier", (req, res) => {
   Courier.findOne({ email: req.body.email })
@@ -45,7 +35,8 @@ router.post("/new-courier", (req, res) => {
                 })
                   .save()
                   .then((newUser) => {
-                    res.send(newUser);
+                    if (!newUser) res.send(false);
+                    res.send(true);
                   });
               });
             }
@@ -91,17 +82,25 @@ router.post("/new-merchant", (req, res) => {
 
 router.post(
   "/login",
-  passport.authenticate("local", { failureRedirect: "/" }),
+  passport.authenticate("local", {
+    failureMessage: true,
+  }),
   function (req, res) {
-    console.log(req.user);
-    res.send({...req.user, token: req.user._id + "@" + req.user.email});
+    console.log(req.user)
+    // req.session.user = req.user;
+    res.send({ ...req.user, token: req.user._id + "@" + req.user.email });
   }
 );
 
 router.get("/signout", function (req, res) {
-  req.session.destroy(function (err) {
-    console.log("out");
-    req.logout();
+  req.logout(function (err) {
+    if (err) res.send(false);
+    console.log("signed out");
+    // res.cookie('auth-token', '',{
+    //   maxAge: 0,
+    //   path:'/'
+    // })
+    req.session.destroy();
     res.send(true);
   });
 });

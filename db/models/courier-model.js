@@ -1,42 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 //user schema for data object structure
-const courierSchema = new Schema({
+const courierSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     phoneNo: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     hash: {
-        type: String
+      type: String,
     },
     locations: {
-        type: Array,
-        required: true,
+      type: Array,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     inventory: {
-        type: Object
+      type: Object,
     },
     logo: {
-        type: Buffer,      
+      type: String,
     },
-    details: {
-        type: String
+    description: {
+      type: String,
     },
     createdProfile: {
-        type: Boolean
+      type: Boolean,
     },
+  },
+  { timestamps: true }
+);
 
-}, { timestamps: true });
-
-const Courier = mongoose.model('courier', courierSchema);
+const Courier = mongoose.model("courier", courierSchema);
 
 module.exports = Courier;
