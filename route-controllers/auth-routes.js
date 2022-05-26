@@ -96,6 +96,10 @@ router.get("/signout", function (req, res) {
   req.logout(function (err) {
     if (err) res.send(false);
     console.log("signed out");
+    // res.cookie('auth-token', '',{
+    //   maxAge: 0,
+    //   path:'/'
+    // })
     req.session.destroy();
     res.send(true);
   });
