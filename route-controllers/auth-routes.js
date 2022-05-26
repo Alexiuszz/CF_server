@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-var ensureLogin = require("connect-ensure-login").ensureLoggedIn;
-var ensureLoggedIn = ensureLogin();
 const Merchant = require("../db/models/merchant-model");
 const Courier = require("../db/models/courier-model");
 const Location = require("../db/models/courier-locations");
@@ -85,12 +83,11 @@ router.post("/new-merchant", (req, res) => {
 router.post(
   "/login",
   passport.authenticate("local", {
-    failureRedirect: "/login",
     failureMessage: true,
   }),
   function (req, res) {
     console.log(req.user)
-    req.session.user = req.user;
+    // req.session.user = req.user;
     res.send({ ...req.user, token: req.user._id + "@" + req.user.email });
   }
 );

@@ -75,13 +75,13 @@ passport.serializeUser(function (user, cb) {
 // });
 
 passport.deserializeUser((req, user, done) => {
-  console.log("at serial " + user.id);
+  console.log("at deserial " + user.id);
+//   Courier.findById(user.id).then((user) => {
+//     if (user) {
+//       done(null, user);
+//     }
+//   });
   Courier.findById(user.id).then((user) => {
-    if (user) {
-      done(null, user);
-    }
-  });
-  Merchant.findById(user.id).then((user) => {
     if (!user) {
       done(null, false);
     }

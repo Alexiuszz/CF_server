@@ -1,12 +1,13 @@
 const express = require("express");
 var sessionstore = require("sessionstore");
-const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
 var logger = require("morgan");
-const bcrypt = require("bcrypt");
+var ensureLogIn = require("connect-ensure-login").ensureLoggedIn;
+
+var ensureLoggedIn = ensureLogIn();
 const cors = require("cors");
 const passportSetup = require("./config/passport-setup");
 
@@ -45,12 +46,6 @@ app.use(
 
 // app.use(passport.initialize());
 app.use(passport.authenticate("session"));
-
-function ensureLoggedIn(req, res, next) {
-  if (!req.session.user) {
-    res.sendStatus(401);
-  } else next();
-}
 
 app.use("/courier", ensureLoggedIn, courierRoute);
 app.use("/auth", authRoute);
