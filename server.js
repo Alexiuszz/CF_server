@@ -51,7 +51,7 @@ app.use("/courier", ensureLoggedIn, courierRoute);
 app.use("/auth", authRoute);
 
 app.get("/login", (req, res) => {
-  res.redirect("http://localhost:3002/signin");
+  res.redirect("http://https://62af9cecb37d4a1cb699cd32--courier-finder.netlify.app/signin");
 });
 
 // app.get("/getCourier", function (req, res) {
