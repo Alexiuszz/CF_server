@@ -19,7 +19,7 @@ const app = express();
 app.set("port", process.env.PORT || 3003);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("../Codes/CourierFinder/App/build"));
+  app.use(express.static("../Codes/CourierFinder/build"));
 }
 
 app.use(logger("dev"));
@@ -51,7 +51,7 @@ app.use("/courier", ensureLoggedIn, courierRoute);
 app.use("/auth", authRoute);
 
 app.get("/login", (req, res) => {
-  res.redirect("http://localhost:3002/auth/signin");
+  res.redirect("http://localhost:3002/signin");
 });
 
 // app.get("/getCourier", function (req, res) {
