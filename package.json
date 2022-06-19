@@ -17,8 +17,6 @@
         "concurrently": "^5.3.0"
     },
     "scripts": {
-        "start": "concurrently \"npm run server\" \"npm run client\"",
-        "server": "nodemon server.js",
-        "client": "node start-client.js"
+        "start": "node server.js"
     }
 }
