@@ -14,9 +14,10 @@ const passportSetup = require("./config/passport-setup");
 const authRoute = require("./route-controllers/auth-routes");
 const courierRoute = require("./route-controllers/courierRoutes");
 
+const keys = require("./config/Keys");
+
 const app = express();
 
-app.set("gKey", process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 app.set("port", process.env.PORT || 3003);
 
 if (process.env.NODE_ENV === "production") {
@@ -56,13 +57,13 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/api/google-key", (req, res) => {
-  if (req.body.key == process.env.KEY) {
-    res.json({key: app.get("gKey")});
+  if (req.body.key == key.KEY) {
+    res.json({key: keys.REACT_APP_GOOGLE_MAPS_API_KEY});
   }
 });
 
 app.get('/', (req, res) => {
-  res.send("process.env.KEY");
+  res.send(process.env.NODE_ENV);
 })
 // app.get("/getCourier", function (req, res) {
 //   console.log(req.session.user);
