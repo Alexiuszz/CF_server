@@ -62,7 +62,7 @@ app.get("/api/google-key", (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send(process.env.KEY);
+  res.send("process.env.KEY");
 })
 // app.get("/getCourier", function (req, res) {
 //   console.log(req.session.user);
