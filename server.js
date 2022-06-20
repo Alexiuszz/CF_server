@@ -6,7 +6,7 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 var logger = require("morgan");
 var ensureLogIn = require("connect-ensure-login").ensureLoggedIn;
-
+require('dotenv').config();
 var ensureLoggedIn = ensureLogIn();
 const cors = require("cors");
 const passportSetup = require("./config/passport-setup");
@@ -16,6 +16,7 @@ const courierRoute = require("./route-controllers/courierRoutes");
 
 const app = express();
 
+app.set("gKey", process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 app.set("port", process.env.PORT || 3003);
 
 if (process.env.NODE_ENV === "production") {
@@ -54,6 +55,15 @@ app.get("/login", (req, res) => {
   res.redirect("https://master--courier-finder.netlify.app/#/signin");
 });
 
+app.get("/api/google-key", (req, res) => {
+  if (req.body.key == process.env.KEY) {
+    res.json({key: app.get("gKey")});
+  }
+});
+
+app.get('/', (req, res) => {
+  res.send(process.env.KEY);
+})
 // app.get("/getCourier", function (req, res) {
 //   console.log(req.session.user);
 //   res.send(req.session.user);
