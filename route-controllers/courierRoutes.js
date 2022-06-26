@@ -1,13 +1,16 @@
 const router = require("express").Router();
 const Courier = require("../db/models/courier-model");
-const passport = require("passport");
 
 router.post("/getCourier", function (req, res) {
-  // if (!req.session.user) {
-  //   return res.sendStatus(401);
-  // }
-  console.log(req.user);
-  res.send(req.user);
+  var id = req.body.id;
+  Courier.findById(id).then((currentUser) => {
+    if (currentUser) {
+      console.log(currentUser);
+      res.send(currentUser);
+    } else res.send('Error Fetching User')
+  }).catch(err => {
+    res.send(err);
+  });
 });
 
 router.post("/set-profile", (req, res) => {
