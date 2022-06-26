@@ -6,11 +6,6 @@ const Courier = require("../db/models/courier-model");
 const Location = require("../db/models/courier-locations");
 const Session = require("../db/models/session-model");
 
-const MongoClient = require("mongodb").MongoClient;
-
-const { ObjectId } = require("mongodb");
-const mongoose = require("mongoose");
-// const cors = require("cors");
 
 router.post("/new-courier", (req, res) => {
   Courier.findOne({ email: req.body.email })
@@ -132,10 +127,7 @@ router.post(
   }
 );
 
-// const url =
-//   "mongodb+srv://Alexius:emmanuel093@datacluster.f2vtb.mongodb.net/DataCluster?retryWrites=true&w=majority";
 
-// const dbName = "datacluster";
 router.post("/signout", function (req, res) {
   req.logout(function (err) {
     if (err) res.send(false);

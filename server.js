@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(logger("dev"));
 
-var whitelist = ["http://localhost:3002", "https://courier-finder.netlify.app"];
+var whitelist = ["http://localhost:3002", "https://emissar.netlify.app"];
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
