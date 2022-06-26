@@ -1,5 +1,4 @@
 const express = require("express");
-var sessionstore = require("sessionstore");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -15,14 +14,13 @@ const passportSetup = require("./config/passport-setup");
 const authRoute = require("./route-controllers/auth-routes");
 const courierRoute = require("./route-controllers/courierRoutes");
 
-const keys = require("./config/Keys");
+const Session = require("./db/models/session-model");
 
 const app = express();
 
 app.set("port", process.env.PORT || 3003);
 
 if (process.env.NODE_ENV === "production") {
-  
   app.set("trust proxy", 1); // trust first proxy
   app.use(express.static("../Codes/CourierFinder/build"));
 }
@@ -41,9 +39,8 @@ var corsOptions = {
   credentials: true,
 };
 
-
 app.use(cors(corsOptions));
-app.enable('trust proxy',true);
+app.enable("trust proxy", true);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser("keyboard cat"));
@@ -65,24 +62,32 @@ app.use(
 
     resave: false,
     saveUninitialized: true,
-    proxy: true,
-    name: 'myapp',
+    name: "myapp",
     cookie: {
       httpOnly: true,
-      secure: false,
+      secure: true,
       // sameSite: "none",
     },
     // maxAge: 3600000
   })
 );
 
-// app.use(proxy('https://courier-finder.netlify.app'));
+
 
 // middleware to test if authenticated
 function isAuthenticated(req, res, next) {
-  console.log(req.session);
-  if (req.session.passport.user.id) next();
-  else next("route");
+  var id = req.body.token;
+  console.log(id);
+
+  Session.findById(id)
+    .then((curSession) => {
+      console.log(curSession);
+      if (curSession) next();
+      else res.send({ sess: false });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 app.use(passport.initialize());
@@ -100,10 +105,6 @@ app.get("/login", (req, res) => {
 app.get("/", (req, res) => {
   res.send(process.env.NODE_ENV);
 });
-// app.get("/getCourier", function (req, res) {
-//   console.log(req.session.user);
-//   res.send(req.session.user);
-// });
 
 //Mongo DB connect
 //mongoose connection

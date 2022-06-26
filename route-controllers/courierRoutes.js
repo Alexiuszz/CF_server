@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const Courier = require("../db/models/courier-model");
-const cors = require("cors");
 const passport = require("passport");
 
-router.get("/getCourier", function (req, res) {
+router.post("/getCourier", function (req, res) {
   // if (!req.session.user) {
   //   return res.sendStatus(401);
   // }

@@ -4,6 +4,12 @@ const bcrypt = require("bcrypt");
 const Merchant = require("../db/models/merchant-model");
 const Courier = require("../db/models/courier-model");
 const Location = require("../db/models/courier-locations");
+const Session = require("../db/models/session-model");
+
+const MongoClient = require("mongodb").MongoClient;
+
+const { ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
 // const cors = require("cors");
 
 router.post("/new-courier", (req, res) => {
@@ -118,25 +124,32 @@ router.post(
   }),
   function (req, res) {
     res.setHeader("Access-Control-Allow-Credentials", "true"),
-      // console.log(req.user);
-    req.session.yes = { id: req.user.id, username: req.user.email };
-    req.session.save(function (err) {
-      // console.log(req.session)
-      res.send({ ...req.user, token: req.user._id + "@" + req.user.email });
-    });
+      req.session.save(function (err) {
+        console.log(req.session.id);
+        console.log(Buffer.byteLength(req.session.id, "utf8"));
+        res.send({ ...req.user, token: req.session.id });
+      });
   }
 );
 
-router.get("/signout", function (req, res) {
+// const url =
+//   "mongodb+srv://Alexius:emmanuel093@datacluster.f2vtb.mongodb.net/DataCluster?retryWrites=true&w=majority";
+
+// const dbName = "datacluster";
+router.post("/signout", function (req, res) {
   req.logout(function (err) {
     if (err) res.send(false);
-    console.log("signed out");
-    // res.cookie('auth-token', '',{
-    //   maxAge: 0,
-    //   path:'/'
-    // })
-    req.session.destroy();
-    res.send(true);
+    var id = req.body.token;
+    Session.findByIdAndDelete(id)
+      .then((result) => {
+        console.log('SIgned Out');
+        req.session.destroy();
+        res.send(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    
   });
 });
 
