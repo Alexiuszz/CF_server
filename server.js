@@ -77,7 +77,7 @@ app.use(
 // middleware to test if authenticated
 function isAuthenticated(req, res, next) {
   var id = req.body.token;
-  // console.log(id);
+  console.log(id);
 
   Session.findById(id)
     .then((curSession) => {
