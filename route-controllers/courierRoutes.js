@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Courier = require("../db/models/courier-model");
 
+
+
 router.post("/getCourier", function (req, res) {
   var id = req.body.id;
   Courier.findById(id)
@@ -16,10 +18,12 @@ router.post("/getCourier", function (req, res) {
 });
 
 router.post("/set-profile", (req, res) => {
-  console.log(req.body.email);
   Courier.updateOne(
     { email: req.body.email },
-    { logo: req.body.logo, description: req.body.description }
+    {
+      logo: req.body.logo,
+      description: req.body.description,
+    }
   )
     .then((update) => {
       console.log(update);
@@ -29,6 +33,7 @@ router.post("/set-profile", (req, res) => {
       ).catch((err) => console.log(err));
       console.log(update.acknowledged);
       res.send(update.acknowledged);
+      res.send(false);
     })
     .catch((err) => console.log(err));
 });

@@ -120,6 +120,7 @@ router.post(
   function (req, res) {
     res.setHeader("Access-Control-Allow-Credentials", "true"),
       req.session.save(function (err) {
+        console.log(req.user);
         res.send({ ...req.user, token: req.session.id });
       });
   }

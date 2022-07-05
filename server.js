@@ -41,8 +41,8 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 app.enable("trust proxy", true);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({limit: '500kb'}));
+app.use(express.urlencoded({limit: '500kb', extended: true }));
 app.use(cookieParser("keyboard cat"));
 
 app.use(
@@ -71,7 +71,6 @@ app.use(
     // maxAge: 3600000
   })
 );
-
 
 
 // middleware to test if authenticated
