@@ -14,20 +14,26 @@ const passportSetup = require("./config/passport-setup");
 const authRoute = require("./route-controllers/auth-routes");
 const courierRoute = require("./route-controllers/courierRoutes");
 
-const Session = require("./db/models/session-model");
+const { isAuthenticated } = require("./middleware/isAuthenticated");
 
 const app = express();
 
 app.set("port", process.env.PORT || 3003);
 
+var baseUrl = "";
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1); // trust first proxy
   app.use(express.static("../Codes/CourierFinder/build"));
+  baseUrl = "https://emissar.netlify.app";
+} else {
+  baseUrl = "http://localhost:3002";
 }
-
 app.use(logger("dev"));
 
-var whitelist = ["http://localhost:3002", "https://emissar.netlify.app"];
+var whitelist = [
+  "http://localhost:3002",
+  "https://emissar.netlify.app",
+];
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -41,8 +47,8 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 app.enable("trust proxy", true);
-app.use(express.json({limit: '500kb'}));
-app.use(express.urlencoded({limit: '500kb', extended: true }));
+app.use(express.json({ limit: "500kb" }));
+app.use(express.urlencoded({ limit: "500kb", extended: true }));
 app.use(cookieParser("keyboard cat"));
 
 app.use(
@@ -72,23 +78,6 @@ app.use(
   })
 );
 
-
-// middleware to test if authenticated
-function isAuthenticated(req, res, next) {
-  var id = req.body.token;
-  console.log(id);
-
-  Session.findById(id)
-    .then((curSession) => {
-      // console.log(curSession);
-      if (curSession) next();
-      else res.send({ sess: false });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
 app.use(passport.initialize());
 app.use(passport.authenticate("session"));
 app.use(passport.session());
@@ -98,7 +87,7 @@ app.use("/courier", isAuthenticated, courierRoute);
 app.use("/auth", authRoute);
 
 app.get("/login", (req, res) => {
-  res.redirect("https://courier-finder.netlify.app/#/signin");
+  res.redirect(`${baseUrl}/#/signin`);
 });
 
 app.get("/", (req, res) => {
@@ -115,7 +104,9 @@ mongoose
   .then((result) =>
     //Wait for DB connection before starting Express Server
     app.listen(app.get("port"), () => {
-      console.log(`Find the server at: http://localhost:${app.get("port")}`);
+      console.log(
+        `Find the server at: http://localhost:${app.get("port")}`
+      );
     })
   )
   .catch((err) => console.log(err));
